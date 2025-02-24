@@ -34,7 +34,7 @@ public class DisplayToken extends JPanel {
     private Player player;
 
     public DisplayToken() {
-        boardImage = new ImageIcon("MonopolyBoard.png").getImage(); // Load Figma board image
+        boardImage = new ImageIcon("MonopolyBoard.png").getImage(); // Load board image
         player = new Player("Player 1"); // Create a player
     }
 
@@ -46,7 +46,7 @@ public class DisplayToken extends JPanel {
         // Draw the player token on top of the board
         g.setColor(Color.RED); // Token color
         int tokenX = 320 + (player.getPosition() * 50); // Adjust based on board layout
-        int tokenY = 70; // Adjust based on board layout
+        int tokenY = 70; 
         g.fillOval(tokenX, tokenY, 20, 20); // Draw token as a circle
     }
 
