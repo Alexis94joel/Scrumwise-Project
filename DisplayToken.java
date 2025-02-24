@@ -12,6 +12,11 @@ class Player {
         this.position = 0; // Start at GO
     }
 
+    public void displayProfile() {
+        System.out.println("Player: " + this.name);
+        System.out.println("Money: $" + this.money);
+    }
+
     public int getPosition() {
         return position;
     }
