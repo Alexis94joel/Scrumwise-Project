@@ -5,16 +5,21 @@ class Player {
     private String name;
     private int money;
     private int position; // 0 = GO
+    private String token;
 
     public Player(String name) {
         this.name = name;
         this.money = 1500; // Start with $1500
         this.position = 0; // Start at GO
+        this.token = null; // No token assigned initially
     }
 
     public void displayProfile() {
+        System.out.println("\nPlayer Profile:");
         System.out.println("Player: " + this.name);
+        System.out.println("Token: " + (token != null ? token : "Not assigned"));
         System.out.println("Money: $" + this.money);
+        System.out.println("Position: " + position);
     }
 
     public int getPosition() {
@@ -31,6 +36,13 @@ class Player {
 
     public void setMoney(int amount) {
         this.money = amount;
+    }
+
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
     }
 }
 

@@ -44,25 +44,28 @@ public static class TokenManager {
         TokenManager tokenManager = new TokenManager();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Welcome to Monopoly Token Selection!");
-        while (true) {
-            System.out.println("\nCurrent available tokens:");
+        // Create a player
+        System.out.print("Enter your name: ");
+        String playerName = scanner.nextLine();
+        Player player = new Player(playerName);
+
+        // Token Selection Loop
+        while (player.getToken() == null) {
+            System.out.println("\nAvailable Tokens:");
             tokenManager.displayAvailableTokens();
 
-            System.out.print("Enter a token name to select it (or type 'exit' to quit): ");
-            String choice = scanner.nextLine().trim();
+            System.out.print("Choose a token: ");
+            String chosenToken = scanner.nextLine().trim();
 
-            if (choice.equalsIgnoreCase("exit")) {
-                System.out.println("Exiting token selection. Have a great game!");
-                break;
-            }
-
-            if (tokenManager.assignToken(choice)) {
-                System.out.println("You have successfully chosen: " + choice);
+            if (tokenManager.assignToken(chosenToken)) {
+                player.setToken(chosenToken);
+                System.out.println("Token assigned successfully!");
             } else {
-                System.out.println("Token not available or invalid. Try again.");
+                System.out.println("Invalid or unavailable token. Try again.");
             }
         }
 
+        // Display updated player profile
+        player.displayProfile();
         scanner.close();
     }
