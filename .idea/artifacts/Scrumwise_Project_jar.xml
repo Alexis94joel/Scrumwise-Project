@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Scrumwise-Project:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Scrumwise_Project_jar</output-path>
+    <root id="archive" name="Scrumwise-Project.jar">
+      <element id="module-output" name="Scrumwise-Project" />
+    </root>
+  </artifact>
+</component>
