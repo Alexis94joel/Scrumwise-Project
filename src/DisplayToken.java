@@ -73,23 +73,23 @@ public class DisplayToken extends JPanel {
     }
 
     private int[] getBoardPosition(int position) {
-        int[][] boardPositions = new int[40][2];
+        int x = 0, y = 0;
+        position = position % 40; // Ensure position wraps around
 
-        int index = 0;
-        // Bottom row (left to right)
-        for (int i = 9; i >= 0; i--)
-            boardPositions[index++] = new int[]{50 + CORNER_SIZE + i * CELL_SIZE, 50 + BOARD_SIZE - CORNER_SIZE};
-        // Left column (bottom to top)
-        for (int i = 8; i > 0; i--)
-            boardPositions[index++] = new int[]{50, 50 + CORNER_SIZE + i * CELL_SIZE};
-        // Top row (right to left)
-        for (int i = 0; i < 9; i++)
-            boardPositions[index++] = new int[]{50 + CORNER_SIZE + i * CELL_SIZE, 50};
-        // Right column (top to bottom)
-        for (int i = 1; i < 9; i++)
-            boardPositions[index++] = new int[]{50 + BOARD_SIZE - CORNER_SIZE, 50 + CORNER_SIZE + i * CELL_SIZE};
+        if (position < 10) { // Bottom row
+            x = 50 + CORNER_SIZE + (9 - position) * CELL_SIZE;
+            y = 50 + BOARD_SIZE - CORNER_SIZE;
+        } else if (position < 20) { // Left column
+            x = 50;
+            y = 50 + CORNER_SIZE + (19 - position) * CELL_SIZE;
+        } else if (position < 30) { // Top row
+            x = 50 + CORNER_SIZE + (position - 20) * CELL_SIZE;
+            y = 50;
+        } else { // Right column
+            x = 50 + BOARD_SIZE - CORNER_SIZE;
+            y = 50 + CORNER_SIZE + (position - 30) * CELL_SIZE;
+        }
 
-        // Fix position if it's greater than 39 (ensure it wraps correctly)
-        return boardPositions[position % 40];
+        return new int[]{x, y};
     }
 }

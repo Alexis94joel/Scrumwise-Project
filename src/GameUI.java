@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.Random;
+import java.util.Collections;
 
 public class GameUI {
     private final List<Player> players;
@@ -12,6 +13,8 @@ public class GameUI {
 
     public GameUI(List<Player> players) {
         this.players = players;
+        // Shuffle the players list to randomize turn order
+        Collections.shuffle(players);
         JFrame frame = new JFrame("Monopoly");
         frame.setSize(1100, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

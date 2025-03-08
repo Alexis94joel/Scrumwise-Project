@@ -26,8 +26,30 @@ public class GameInitializer {
             }
         }
 
+        List<String> playerNames = new ArrayList<>(); // To check for duplicate names
+
         for (int i = 1; i <= numPlayers; i++) {
-            String name = JOptionPane.showInputDialog("Player " + i + " name:");
+            String name;
+            while (true) {
+                name = JOptionPane.showInputDialog("Player " + i + " name:");
+
+                if (name == null) {
+                    JOptionPane.showMessageDialog(null, "Game setup canceled.");
+                    System.exit(0);
+                }
+
+                name = name.trim(); // Remove leading/trailing whitespace
+
+                if (name.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Player name cannot be empty.");
+                } else if (playerNames.contains(name)) {
+                    JOptionPane.showMessageDialog(null, "Player name already exists. Please enter a unique name.");
+                } else {
+                    playerNames.add(name);
+                    break; // Valid name entered
+                }
+            }
+
             Color color = new Color[]{Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.PINK, Color.CYAN, Color.MAGENTA}[i % 8];
             players.add(new Player(name, color));
         }
