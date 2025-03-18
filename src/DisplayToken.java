@@ -7,7 +7,7 @@ public class DisplayToken extends JPanel {
     private final int CELL_SIZE = 55; // Size of normal spaces
     private final int CORNER_SIZE = CELL_SIZE * 2; // Bigger corner spaces
     private final int BOARD_SIZE = CELL_SIZE * 9 + CORNER_SIZE * 2; // Adjusted board size
-    private final List<Player> players;
+    private final List<Player> players; // List of players to be displayed on the board
 
     public DisplayToken(List<Player> players) {
         this.players = players;
@@ -16,10 +16,11 @@ public class DisplayToken extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawBoard(g);
-        drawPlayers(g);
+        drawBoard(g); // Draw the Monopoly board
+        drawPlayers(g); // Draw the players on the board
     }
 
+    // Method to draw the Monopoly board
     private void drawBoard(Graphics g) {
         g.setColor(Color.BLACK);
         g.drawRect(50, 50, BOARD_SIZE, BOARD_SIZE); // Draw outer square
@@ -43,22 +44,22 @@ public class DisplayToken extends JPanel {
         }
     }
 
+    // Method to draw players on the board
     private void drawPlayers(Graphics g) {
-        // Store the last player positions to handle overlaps
-        List<int[]> playerPositions = new ArrayList<>();
+
+        List<int[]> playerPositions = new ArrayList<>(); // List to track occupied positions
 
         for (Player player : players) {
-            int[] cords = getBoardPosition(player.getPosition());
+            int[] cords = getBoardPosition(player.getPosition()); // Get board coordinates
 
-            // Check if the current position is already taken by another player
             int offsetX = 0;
             int offsetY = 0;
 
-            // Check for overlap
+            // Check if another player is already in the same position
             for (int j = 0; j < playerPositions.size(); j++) {
                 if (playerPositions.get(j)[0] == cords[0] && playerPositions.get(j)[1] == cords[1]) {
                     // If overlap happens, adjust the offset
-                    offsetX = (j + 1) * 12;  // Increase the offset
+                    offsetX = (j + 1) * 12;
                     offsetY = (j + 1) * 12;
                 }
             }
@@ -72,6 +73,7 @@ public class DisplayToken extends JPanel {
         }
     }
 
+    // Method to get the coordinates of a board position
     private int[] getBoardPosition(int position) {
         int x = 0, y = 0;
         position = position % 40; // Ensure position wraps around
@@ -90,6 +92,6 @@ public class DisplayToken extends JPanel {
             y = 50 + CORNER_SIZE + (position - 30) * CELL_SIZE;
         }
 
-        return new int[]{x, y};
+        return new int[]{x, y}; // Return calculated coordinates
     }
 }
