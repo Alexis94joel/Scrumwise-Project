@@ -12,6 +12,7 @@ public class GameUI {
     private final JLabel[] profiles; // Labels displaying player information
     private final JLabel diceLabel; // Label to show dice roll results
     private int currentIndex = 0; // Tracks the current player's turn
+    private Board gameBoard; // Add a Board instance
 
     // Constructs the Monopoly game UI.
     public GameUI(List<Player> players) {
