@@ -76,22 +76,22 @@ public class DisplayToken extends JPanel {
     // Method to get the coordinates of a board position
     private int[] getBoardPosition(int position) {
         int x = 0, y = 0;
-        position = position % 40; // Ensure position wraps around
+        position = position % 40;
 
-        if (position < 10) { // Bottom row
+        if (position < 10) {
             x = 50 + CORNER_SIZE + (9 - position) * CELL_SIZE;
             y = 50 + BOARD_SIZE - CORNER_SIZE;
-        } else if (position < 20) { // Left column
+        } else if (position < 20) {
             x = 50;
             y = 50 + CORNER_SIZE + (19 - position) * CELL_SIZE;
-        } else if (position < 30) { // Top row
-            x = 50 + CORNER_SIZE + (position - 20) * CELL_SIZE;
+        } else if (position < 30) {
+            x = 50 + CORNER_SIZE + (position - 21) * CELL_SIZE;
             y = 50;
-        } else { // Right column
+        } else {
             x = 50 + BOARD_SIZE - CORNER_SIZE;
-            y = 50 + CORNER_SIZE + (position - 30) * CELL_SIZE;
+            y = 50 + CORNER_SIZE + (position - 31) * CELL_SIZE;
         }
 
-        return new int[]{x, y}; // Return calculated coordinates
+        return new int[]{x, y};
     }
 }
