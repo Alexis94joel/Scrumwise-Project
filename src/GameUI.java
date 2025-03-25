@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Collections;
@@ -65,15 +66,52 @@ public class GameUI {
     private void rollDice() {
         Player player = players.get(currentIndex);
         Random rand = new Random();
-
-        // Roll two dice (values from 1 to 6) and sum them
         int roll = rand.nextInt(6) + 1 + rand.nextInt(6) + 1;
+        diceLabel.setText(player.getName() + " rolled: " + roll);
+        player.move(roll);
 
-        diceLabel.setText(player.getName() + " rolled: " + roll); // Display the dice roll result
-        player.move(roll); // Move the player based on the dice roll
-        board.repaint(); // Refresh the board display to update player positions
-        updateProfiles(); // Update the player profile information
-        currentIndex = (currentIndex + 1) % players.size(); // Move to the next player's turn
+        if (player.getMoney() < 0) {
+            handleBankruptcy(player);
+        } else {
+            board.repaint();
+            updateProfiles();
+            currentIndex = (currentIndex + 1) % players.size();
+        }
+        checkForWinner();
+    }
+
+    public void handleBankruptcy(Player player) {
+        JOptionPane.showMessageDialog(null, player.getName() + " is bankrupt!");
+
+        // Iterate through the player's properties
+        List<Property> bankruptPlayerProperties = player.getProperties();
+        for (Property property : bankruptPlayerProperties) {
+            property.getOwner();
+        }
+        bankruptPlayerProperties.clear(); //clear the properties
+
+        // Remove the player from the game.
+        for (Iterator<Player> it = players.iterator(); it.hasNext(); ) {
+            Player p = it.next();
+            if (p == player) {
+                it.remove(); // Safely remove the player
+                break; // Important:  We've removed the player, so exit the loop
+            }
+        }
+
+        if (currentIndex >= players.size()) {
+            currentIndex = 0; // Reset currentIndex if it's out of bounds
+        }
+        updateProfiles();
+        board.repaint();
+        checkForWinner(); //check winner
+    }
+
+    private void checkForWinner() {
+        if (players.size() == 1) {
+            JOptionPane.showMessageDialog(null, players.get(0).getName() + " is the winner!");
+            System.exit(0);
+        }
     }
 
     // Updates the side panel to reflect the latest player details, including name, token, and money.
