@@ -1,19 +1,16 @@
 import javax.swing.*;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
 
 // Class to represent a property in the game
 public class Property {
-    private final String name;
-    private final int price;
-    private int rent = 0;
-    private Player owner; // Null if unowned
+    private final String name; // Name of the property
+    private final int price; // Price of the property
+    private int rent = 0; // Rent of the property
+    private Player owner; // Owner of the property (null if unowned)
 
-    public Property(String name, int price, int rent) { //Added rent
+    public Property(String name, int price, int rent) {
         this.name = name;
         this.price = price;
-        this.rent = rent; //added this
+        this.rent = rent;
         this.owner = null;
     }
 
@@ -37,26 +34,28 @@ public class Property {
         return owner == null;
     }
 
-    public void purchase(Player player) {
+    public void purchase(Player player) { // Method to handle the purchase of the property
+        // Check if the property is available and the player has enough money
         if (isAvailable() && player.getMoney() >= price) {
-            player.updateMoney(-price); // Use the new updateMoney method
+            player.updateMoney(-price);
             this.owner = player;
-            player.addOwnedProperty(this); // Use the new addOwnedProperty method
-            System.out.println(player.getName() + " purchased " + name + " for $" + price);
+            player.addOwnedProperty(this);
+            JOptionPane.showMessageDialog(null, player.getName() + " purchased " + name + " for $" + price);
+            GameUI.updateProfiles(player, owner);
         } else {
-            System.out.println("Purchase failed: Either property is owned or insufficient funds.");
+            JOptionPane.showMessageDialog(null, "Purchase failed: Either property is owned or insufficient funds.");
         }
     }
-
-    public void payRent(Player player) {
+    public void payRent(Player player, int rentAmount) { // Method to handle the payment of rent
         if (owner != null && owner != player) {
-            if (player.getMoney() >= rent) {
-                player.deductMoney(rent);
-                owner.addMoney(rent);
-                System.out.println(player.getName() + " paid $" + rent + " in rent to " + owner.getName());
+            if (player.getMoney() >= rentAmount) {
+                player.deductMoney(rentAmount);
+                owner.addMoney(rentAmount);
+                JOptionPane.showMessageDialog(null, player.getName() + " paid $" + rentAmount + " in rent to " + owner.getName());
+                GameUI.updateProfiles(player, owner);
             } else {
-                System.out.println(player.getName() + " does not have enough money to pay rent!");
-                // Handle bankruptcy logic here if needed
+                JOptionPane.showMessageDialog(null, player.getName() + " does not have enough money to pay rent!");
+                player.handleBankruptcy();
             }
         }
     }
@@ -64,10 +63,10 @@ public class Property {
     // This method is intended to be overridden by subclasses like Utility
     public void landOnProperty(Player player, int diceRoll) {
         if (owner != null && owner != player) {
-            //  Default implementation (e.g., for regular properties)
-            //  Rent calculation would happen here, and would likely involve
-            //  querying the owner for rent amount, or the property itself.
-            System.out.println(player.getName() + " landed on " + name + " owned by " + owner.getName());
+            payRent(player, rent);
         }
+    }
+    public void setOwner(Player newOwner){
+        this.owner = newOwner;
     }
 }

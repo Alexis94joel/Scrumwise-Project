@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +63,8 @@ public class Player {
         if (amount > 0 && money >= amount) {
             money -= amount;
         } else {
-            System.out.println(name + " does not have enough money!");
-            // Add bankruptcy handling logic if needed
+            JOptionPane.showMessageDialog(null, name + " does not have enough money!");
+            handleBankruptcy(); //handle here
         }
     }
 
@@ -94,5 +95,17 @@ public class Player {
 
     public List<Property> getProperties() {
         return ownedProperties;
+    }
+
+    public void handleBankruptcy() { // Method to handle the player's bankruptcy
+        if (!eliminated) { // Only handle bankruptcy once
+            eliminated = true;
+            JOptionPane.showMessageDialog(null, name + " is bankrupt!");
+            // Iterate through the player's properties
+            for (Property property : ownedProperties) {
+                property.setOwner(null); //set owner to null
+            }
+            ownedProperties.clear(); //clear the properties
+        }
     }
 }

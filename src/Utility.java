@@ -8,9 +8,7 @@ public class Utility extends Property {
     public void landOnProperty(Player player, int diceRoll) {
         if (getOwner() != null && getOwner() != player) {
             int rent = calculateUtilityRent(diceRoll, getOwner());
-            player.updateMoney(-rent);
-            getOwner().updateMoney(rent);
-            System.out.println(player.getName() + " paid $" + rent + " rent to " + getOwner().getName() + " for " + getName());
+            payRent(player, rent);
         }
     }
 
