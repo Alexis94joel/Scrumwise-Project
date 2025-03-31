@@ -59,11 +59,24 @@ public class GameUI {
     private void rollDice() { // Method to handle the rolling of the dice
         Player player = players.get(currentIndex);
         Random rand = new Random();
-        int roll = rand.nextInt(6) + 1 + rand.nextInt(6) + 1;
-        diceLabel.setText(player.getName() + " rolled: " + roll);
-        player.move(roll);
 
-        handleSpace(player, roll); // Handle the space the player landed on
+        // Roll two dice separately
+        int die1 = rand.nextInt(6) + 1; // First die roll
+        int die2 = rand.nextInt(6) + 1; // Second die roll
+
+        // Calculate the total roll (sum of both dice)
+        int totalRoll = die1 + die2;
+
+        // Check if the player rolled doubles
+        boolean isDouble = (die1 == die2);
+
+        // Update the diceLabel to display the result
+        diceLabel.setText(player.getName() + " rolled: " + die1 + " and " + die2 + (isDouble ? " (Double!)" : ""));
+
+        // Move the player by the total roll
+        player.move(totalRoll);
+
+        handleSpace(player, totalRoll); // Handle the space the player landed on
 
         if (player.isEliminated()) {
             handleBankruptcy(player);
