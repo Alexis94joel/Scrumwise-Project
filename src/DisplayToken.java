@@ -26,10 +26,10 @@ public class DisplayToken extends JPanel {
         g.drawRect(50, 50, BOARD_SIZE, BOARD_SIZE); // Draw outer square
 
         // Draw the four corners (bigger than regular spaces)
-        g.drawRect(50, 50, CORNER_SIZE, CORNER_SIZE); // Bottom-left (GO)
-        g.drawRect(50 + BOARD_SIZE - CORNER_SIZE, 50, CORNER_SIZE, CORNER_SIZE); // Bottom-right (Jail)
-        g.drawRect(50, 50 + BOARD_SIZE - CORNER_SIZE, CORNER_SIZE, CORNER_SIZE); // Top-left (Go to Jail)
-        g.drawRect(50 + BOARD_SIZE - CORNER_SIZE, 50 + BOARD_SIZE - CORNER_SIZE, CORNER_SIZE, CORNER_SIZE); // Top-right (Free Parking)
+        g.drawRect(50, 50, CORNER_SIZE, CORNER_SIZE); // Bottom-right (GO)
+        g.drawRect(50 + BOARD_SIZE - CORNER_SIZE, 50, CORNER_SIZE, CORNER_SIZE); // Bottom-left (Jail)
+        g.drawRect(50, 50 + BOARD_SIZE - CORNER_SIZE, CORNER_SIZE, CORNER_SIZE); // Top-right (Go to Jail)
+        g.drawRect(50 + BOARD_SIZE - CORNER_SIZE, 50 + BOARD_SIZE - CORNER_SIZE, CORNER_SIZE, CORNER_SIZE); // Top-left (Free Parking)
 
         // Draw normal spaces (along the edges)
         for (int i = 0; i < 9; i++) {
