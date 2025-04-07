@@ -56,27 +56,29 @@ public class GameUI {
         frame.setVisible(true);
     }
 
-    private void rollDice() { // Method to handle the rolling of the dice
+    private void rollDice() {
         Player player = players.get(currentIndex);
         Random rand = new Random();
 
-        // Roll two dice separately
-        int die1 = rand.nextInt(6) + 1; // First die roll
-        int die2 = rand.nextInt(6) + 1; // Second die roll
-
-        // Calculate the total roll (sum of both dice)
+        int die1 = rand.nextInt(6) + 1;
+        int die2 = rand.nextInt(6) + 1;
         int totalRoll = die1 + die2;
-
-        // Check if the player rolled doubles
         boolean isDouble = (die1 == die2);
 
-        // Update the diceLabel to display the result
         diceLabel.setText(player.getName() + " rolled: " + die1 + " and " + die2 + (isDouble ? " (Double!)" : ""));
 
-        // Move the player by the total roll
-        player.move(totalRoll);
+        // Use modified move method (returns true if passed GO)
+        int oldPosition = player.getPosition();
+        boolean passedGO = player.move(totalRoll);
 
-        handleSpace(player, totalRoll); // Handle the space the player landed on
+        // Handle passing GO or landing on GO (position 0)
+        if (passedGO || player.getPosition() == 0 && oldPosition != 0) {
+            player.addMoney(200);
+            GameUI.updateProfiles(player,player);
+            JOptionPane.showMessageDialog(null, player.getName() + " passed GO and collected $200!");
+        }
+
+        handleSpace(player, totalRoll);
 
         if (player.isEliminated()) {
             handleBankruptcy(player);
@@ -88,6 +90,8 @@ public class GameUI {
 
         checkForWinner();
     }
+
+
 
     private void handleSpace(Player player, int diceRoll) { // Changed to accept diceRoll
         int playerPosition = player.getPosition();
