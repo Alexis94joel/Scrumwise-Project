@@ -50,9 +50,12 @@ public class Player {
         this.eliminated = true;
     }
 
-    public void move(int steps) {
+    public boolean move(int steps) {
+        int oldPosition = position;
         position = (position + steps) % 40;
+        return (oldPosition + steps) >= 40;
     }
+
 
     /**
      * Deducts money from the player's balance.
