@@ -56,25 +56,15 @@ public class Player {
         return (oldPosition + steps) >= 40;
     }
 
-
-    /**
-     * Deducts money from the player's balance.
-     * Ensures the player has enough money before deducting.
-     * If not enough money, prints a warning (bankruptcy handling can be added later).
-     */
     public void deductMoney(int amount) {
         if (amount > 0 && money >= amount) {
             money -= amount;
         } else {
             JOptionPane.showMessageDialog(null, name + " does not have enough money!");
-            handleBankruptcy(); //handle here
+            handleBankruptcy();
         }
     }
 
-    /**
-     * Adds money to the player's balance.
-     * This can be used for collecting rent, passing GO, or other transactions.
-     */
     public void addMoney(int amount) {
         if (amount > 0) {
             money += amount;
@@ -100,15 +90,41 @@ public class Player {
         return ownedProperties;
     }
 
-    public void handleBankruptcy() { // Method to handle the player's bankruptcy
-        if (!eliminated) { // Only handle bankruptcy once
+    public void handleBankruptcy() {
+        if (!eliminated) {
             eliminated = true;
             JOptionPane.showMessageDialog(null, name + " is bankrupt!");
-            // Iterate through the player's properties
             for (Property property : ownedProperties) {
-                property.setOwner(null); //set owner to null
+                property.setOwner(null);
             }
-            ownedProperties.clear(); //clear the properties
+            ownedProperties.clear();
         }
+    }
+
+    public boolean mortgageProperty(Property property) {
+        if (ownedProperties.contains(property) && !property.isMortgaged()) {
+            property.setMortgaged(true);
+            addMoney(property.getMortgageValue());
+            JOptionPane.showMessageDialog(null, name + " mortgaged " + property.getName() + " for $" + property.getMortgageValue());
+            return true;
+
+        }
+        return false;
+    }
+
+    public boolean unmortgageProperty(Property property) {
+        if (ownedProperties.contains(property) && property.isMortgaged()) {
+            int costToUnmortgage = property.getUnmortgageCost();
+            if (money >= costToUnmortgage) {
+                property.setMortgaged(false);
+                deductMoney(costToUnmortgage);
+                JOptionPane.showMessageDialog(null, name + " unmortgaged " + property.getName() + " for $" + costToUnmortgage);
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(null, name + " does not have enough money to unmortgage " + property.getName());
+                return false;
+            }
+        }
+        return false;
     }
 }
