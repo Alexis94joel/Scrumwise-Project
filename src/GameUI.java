@@ -95,6 +95,13 @@ public class GameUI {
 
     private void handleSpace(Player player, int diceRoll) { // Changed to accept diceRoll
         int playerPosition = player.getPosition();
+
+        if (playerPosition == 4) {
+            player.deductMoney(200);
+            JOptionPane.showMessageDialog(null, player.getName() + " landed on Income Tax and paid $200!");
+            GameUI.updateProfiles(player, player);
+        }
+
         if (properties.containsKey(playerPosition)) {
             Property property = properties.get(playerPosition);
 
