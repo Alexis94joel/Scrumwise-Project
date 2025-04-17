@@ -1,21 +1,21 @@
-//railroad class
-public class Railroad extends Property{
-    private static final int[] RENT_VALUES = {25, 50, 100, 200}; // Rent increases with more railroads owned
-    public Railroad(String name, int price, int rent){
-        super(name, price, rent);
-    }
+public class Railroad extends Property {
 
+    public Railroad(String name, int price, int baseRent) {
+        // Railroads don't use house rent structure, so pass empty array
+        super(name, price, baseRent, new int[0]);
+    }
 
     @Override
-    public void landOnProperty(Player player, int diceRoll){
-        if(getOwner() !=null && getOwner() != player){
-            int rent=RENT_VALUES[Math.min(countOwnedRailroads(getOwner()) - 1, RENT_VALUES.length - 1)];
-            payRent(player,rent);
+    public void landOnProperty(Player player, int diceRoll) {
+        if (getOwner() != null && getOwner() != player) {
+            int count = (int) getOwner().getOwnedProperties()
+                    .stream()
+                    .filter(p -> p instanceof Railroad)
+                    .count();
+
+            int rent = 25 * (int) Math.pow(2, count - 1); // Rent doubles: 25, 50, 100, 200
+            payRent(player, rent);
         }
     }
-
-
-    public int countOwnedRailroads(Player owner){
-        return (int) owner.getOwnedProperties().stream().filter(p -> p instanceof Railroad).count();
-    }
 }
+

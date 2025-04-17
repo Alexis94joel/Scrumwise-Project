@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class GameUI {
-    private static GameUI instance;
+    private static GameUI instance; //changed to static
     private final List<Player> players;
     private final DisplayToken board;
     private final JLabel[] profiles;
@@ -17,11 +17,9 @@ public class GameUI {
     private final JPanel sidePanel;
     private final JPanel[] playerPropertyPanels;
     private final JButton rollButton;
-    private JButton mortgageButton; // Added for mortgage
-    private JButton unmortgageButton; // Added for unmortgage
 
     public GameUI(List<Player> players) {
-        instance = this;
+        instance = this; //make instance
         this.players = new ArrayList<>(players);
         JFrame frame = new JFrame("Monopoly");
         frame.setSize(1100, 800);
@@ -50,46 +48,32 @@ public class GameUI {
         rollButton = new JButton("Roll Dice");
         rollButton.setFont(new Font("Arial", Font.BOLD, 16));
         rollButton.addActionListener(e -> rollDice());
-
-        mortgageButton = new JButton("Mortgage");
-        mortgageButton.setFont(new Font("Arial", Font.BOLD, 16));
-        mortgageButton.addActionListener(e -> showMortgageOptions());
-
-        unmortgageButton = new JButton("Unmortgage");
-        unmortgageButton.setFont(new Font("Arial", Font.BOLD, 16));
-        unmortgageButton.addActionListener(e -> showUnmortgageOptions());
-
         sidePanel.add(diceLabel);
         sidePanel.add(rollButton);
-        sidePanel.add(mortgageButton); // Add mortgage button
-        sidePanel.add(unmortgageButton); // Add unmortgage button
         frame.add(sidePanel, BorderLayout.EAST);
 
         updateProfiles();
         frame.setVisible(true);
     }
 
-    private void rollDice() {
+    public static boolean playerOwnsColorGroup(Player player, Property property) {
+        List<Property> colorGroup = getColorGroup(property);
+        if (colorGroup == null) return false;
+
+        for (Property p : colorGroup) {
+            if (p.getOwner() != player) return false;
+        }
+        return true;
+    }
+
+    private void rollDice() { // Method to handle the rolling of the dice
         Player player = players.get(currentIndex);
         Random rand = new Random();
+        int roll = rand.nextInt(6) + 1 + rand.nextInt(6) + 1;
+        diceLabel.setText(player.getName() + " rolled: " + roll);
+        player.move(roll);
 
-        int die1 = rand.nextInt(6) + 1;
-        int die2 = rand.nextInt(6) + 1;
-        int totalRoll = die1 + die2;
-        boolean isDouble = (die1 == die2);
-
-        diceLabel.setText(player.getName() + " rolled: " + die1 + " and " + die2 + (isDouble ? " (Double!)" : ""));
-
-        int oldPosition = player.getPosition();
-        boolean passedGO = player.move(totalRoll);
-
-        if (passedGO || player.getPosition() == 0 && oldPosition != 0) {
-            player.addMoney(200);
-            GameUI.updateProfiles(player, player);
-            JOptionPane.showMessageDialog(null, player.getName() + " passed GO and collected $200!");
-        }
-
-        handleSpace(player, totalRoll);
+        handleSpace(player, roll); // Handle the space the player landed on
 
         if (player.isEliminated()) {
             handleBankruptcy(player);
@@ -102,18 +86,12 @@ public class GameUI {
         checkForWinner();
     }
 
-    private void handleSpace(Player player, int diceRoll) {
+    private void handleSpace(Player player, int diceRoll) { // Changed to accept diceRoll
         int playerPosition = player.getPosition();
-        // take $200 income tax
-        if (playerPosition == 4) {
-            player.deductMoney(200);
-            JOptionPane.showMessageDialog(null, player.getName() + " landed on Income Tax and paid $200!");
-            GameUI.updateProfiles(player, player);
-        }
         if (properties.containsKey(playerPosition)) {
             Property property = properties.get(playerPosition);
 
-            board.repaint();
+            board.repaint(); // Move the token first
 
             if (property.isAvailable()) {
                 int choice = JOptionPane.showConfirmDialog(null, "Do you want to purchase " + property.getName() + " for $" + property.getPrice() + "?", "Purchase", JOptionPane.YES_NO_OPTION);
@@ -129,7 +107,7 @@ public class GameUI {
                     }
                 }
             } else {
-                property.landOnProperty(player, diceRoll);
+                property.landOnProperty(player, diceRoll); // Use the landOnProperty method
                 if (player.isEliminated()) {
                     handleBankruptcy(player);
                 } else {
@@ -147,31 +125,33 @@ public class GameUI {
     private void handleBankruptcy(Player player) {
         player.handleBankruptcy();
 
+        // Remove the player from the game.
         for (Iterator<Player> it = players.iterator(); it.hasNext(); ) {
             Player p = it.next();
             if (p == player) {
-                it.remove();
-                break;
+                it.remove(); // Safely remove the player
+                break; // Important:  We've removed the player, so exit the loop
             }
         }
 
         if (currentIndex >= players.size()) {
-            currentIndex = 0;
+            currentIndex = 0; // Reset currentIndex if it's out of bounds
         }
         updateProfiles();
         board.repaint();
-        checkForWinner();
+        checkForWinner(); //check winner
     }
 
-    private void checkForWinner() {
+    private void checkForWinner() { // Method to check for a winner
         if (players.size() == 1) {
             JOptionPane.showMessageDialog(null, players.get(0).getName() + " is the winner!");
             System.exit(0);
         }
     }
 
+    // Method to update all player profiles
     public static void updateProfiles() {
-        if (instance != null) {
+        if (instance != null) { //check instance
             SwingUtilities.invokeLater(() -> {
                 instance.sidePanel.removeAll();
                 for (int i = 0; i < instance.players.size(); i++) {
@@ -184,11 +164,7 @@ public class GameUI {
                         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
                         instance.playerPropertyPanels[i].add(titleLabel);
                         for (Property prop : p.getProperties()) {
-                            String propertyLabelText = prop.getName() + " (Rent: $" + prop.getRent() + ")";
-                            if (prop.isMortgaged()) {
-                                propertyLabelText += " (Mortgaged)";
-                            }
-                            JLabel propertyLabel = new JLabel(propertyLabelText);
+                            JLabel propertyLabel = new JLabel(prop.getName() + " (Rent: $" + prop.getRent() + ")");
                             propertyLabel.setFont(new Font("Arial", Font.PLAIN, 12));
                             instance.playerPropertyPanels[i].add(propertyLabel);
                         }
@@ -198,8 +174,6 @@ public class GameUI {
                 }
                 instance.sidePanel.add(instance.diceLabel);
                 instance.sidePanel.add(instance.rollButton);
-                instance.sidePanel.add(instance.mortgageButton); // Add mortgage button
-                instance.sidePanel.add(instance.unmortgageButton); // Add unmortgage button
                 instance.sidePanel.revalidate();
                 instance.board.repaint();
             });
@@ -221,134 +195,88 @@ public class GameUI {
         }
     }
 
+    private static List<Property> getColorGroup(Property property) {
+        List<Property> group = new ArrayList<>();
+
+        String name = property.getName();
+        if (name.contains("Mediterranean") || name.contains("Baltic")) {
+            group.add(instance.properties.get(1));
+            group.add(instance.properties.get(3));
+        } else if (name.contains("Oriental") || name.contains("Vermont") || name.contains("Connecticut")) {
+            group.add(instance.properties.get(6));
+            group.add(instance.properties.get(8));
+            group.add(instance.properties.get(9));
+        } else if (name.contains("St. Charles") || name.contains("States") || name.contains("Virginia")) {
+            group.add(instance.properties.get(11));
+            group.add(instance.properties.get(13));
+            group.add(instance.properties.get(14));
+        } else if (name.contains("St. James") || name.contains("Tennessee") || name.contains("New York")) {
+            group.add(instance.properties.get(16));
+            group.add(instance.properties.get(18));
+            group.add(instance.properties.get(19));
+        } else if (name.contains("Kentucky") || name.contains("Indiana") || name.contains("Illinois")) {
+            group.add(instance.properties.get(21));
+            group.add(instance.properties.get(23));
+            group.add(instance.properties.get(24));
+        } else if (name.contains("Atlantic") || name.contains("Ventnor") || name.contains("Marvin")) {
+            group.add(instance.properties.get(26));
+            group.add(instance.properties.get(27));
+            group.add(instance.properties.get(29));
+        } else if (name.contains("Pacific") || name.contains("North Carolina") || name.contains("Pennsylvania")) {
+            group.add(instance.properties.get(31));
+            group.add(instance.properties.get(32));
+            group.add(instance.properties.get(34));
+        } else if (name.contains("Park") || name.contains("Boardwalk")) {
+            group.add(instance.properties.get(37));
+            group.add(instance.properties.get(39));
+        } else {
+            return null;
+        }
+
+        return group;
+    }
+
+
     private void initializeProperties() {
-        properties.put(1, new Property("Mediterranean Avenue", 60, 2));
-        properties.put(3, new Property("Baltic Avenue", 60, 4));
+        properties.put(1, new Property("Mediterranean Avenue", 60, 2, new int[]{2, 10, 30, 90, 160}));
+        properties.put(3, new Property("Baltic Avenue", 60, 4, new int[]{4, 20, 60, 180, 320}));
+
         properties.put(5, new Railroad("Reading Railroad", 200, 25));
-        properties.put(6, new Property("Oriental Avenue", 100, 6));
-        properties.put(8, new Property("Vermont Avenue", 100, 6));
-        properties.put(9, new Property("Connecticut Avenue", 120, 8));
-        properties.put(11, new Property("St. Charles Place", 140, 10));
+
+        properties.put(6, new Property("Oriental Avenue", 100, 6, new int[]{6, 30, 90, 270, 400}));
+        properties.put(8, new Property("Vermont Avenue", 100, 6, new int[]{6, 30, 90, 270, 400}));
+        properties.put(9, new Property("Connecticut Avenue", 120, 8, new int[]{8, 40, 100, 300, 450}));
+
+        properties.put(11, new Property("St. Charles Place", 140, 10, new int[]{10, 50, 150, 450, 625}));
         properties.put(12, new Utility("Electric Company", 150, 0));
-        properties.put(13, new Property("States Avenue", 140, 10));
-        properties.put(14, new Property("Virginia Avenue", 160, 12));
+        properties.put(13, new Property("States Avenue", 140, 10, new int[]{10, 50, 150, 450, 625}));
+        properties.put(14, new Property("Virginia Avenue", 160, 12, new int[]{12, 60, 180, 500, 700}));
+
         properties.put(15, new Railroad("Pennsylvania Railroad", 200, 25));
-        properties.put(16, new Property("St. James Place", 180, 14));
-        properties.put(18, new Property("Tennessee Avenue", 180, 14));
-        properties.put(19, new Property("New York Ave", 200, 16));
-        properties.put(21, new Property("Kentucky Avenue", 220, 18));
-        properties.put(23, new Property("Indiana Avenue", 220, 18));
-        properties.put(24, new Property("Illinois Avenue", 240, 20));
+
+        properties.put(16, new Property("St. James Place", 180, 14, new int[]{14, 70, 200, 550, 750}));
+        properties.put(18, new Property("Tennessee Avenue", 180, 14, new int[]{14, 70, 200, 550, 750}));
+        properties.put(19, new Property("New York Avenue", 200, 16, new int[]{16, 80, 220, 600, 800}));
+
+        properties.put(21, new Property("Kentucky Avenue", 220, 18, new int[]{18, 90, 250, 700, 875}));
+        properties.put(23, new Property("Indiana Avenue", 220, 18, new int[]{18, 90, 250, 700, 875}));
+        properties.put(24, new Property("Illinois Avenue", 240, 20, new int[]{20, 100, 300, 750, 925}));
+
         properties.put(25, new Railroad("B&O Railroad", 200, 25));
-        properties.put(26, new Property("Atlantic Avenue", 260, 22));
-        properties.put(27, new Property("Ventnor Avenue", 260, 22));
+
+        properties.put(26, new Property("Atlantic Avenue", 260, 22, new int[]{22, 110, 330, 800, 975}));
+        properties.put(27, new Property("Ventnor Avenue", 260, 22, new int[]{22, 110, 330, 800, 975}));
         properties.put(28, new Utility("Water Works", 150, 0));
-        properties.put(29, new Property("Marvin Gardens", 280, 24));
-        properties.put(31, new Property("Pacific Avenue", 300, 26));
-        properties.put(32, new Property("North Carolina Avenue", 300, 26));
-        properties.put(34, new Property("Pennsylvania Avenue", 320, 28));
+        properties.put(29, new Property("Marvin Gardens", 280, 24, new int[]{24, 120, 360, 850, 1025}));
+
+        properties.put(31, new Property("Pacific Avenue", 300, 26, new int[]{26, 130, 390, 900, 1100}));
+        properties.put(32, new Property("North Carolina Avenue", 300, 26, new int[]{26, 130, 390, 900, 1100}));
+        properties.put(34, new Property("Pennsylvania Avenue", 320, 28, new int[]{28, 150, 450, 1000, 1200}));
+
         properties.put(35, new Railroad("Short Line Railroad", 200, 25));
-        properties.put(37, new Property("Park Place", 350, 35));
-        properties.put(39, new Property("Boardwalk", 400, 50));
-    }
-    private void showMortgageOptions() {
-        Player currentPlayer = players.get(currentIndex);
-        List<Property> mortgagableProperties = new ArrayList<>();
-        for (Property property : currentPlayer.getOwnedProperties()) {
-            if (!property.isMortgaged()) {
-                mortgagableProperties.add(property);
-            }
-        }
 
-        if (mortgagableProperties.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "You have no properties eligible for mortgaging.");
-            return;
-        }
-
-        Property[] propertyArray = mortgagableProperties.toArray(new Property[0]);
-        JComboBox<Property> propertyComboBox = new JComboBox<>(propertyArray);
-        // Use a custom renderer to display property names in the JComboBox
-        propertyComboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Property) {
-                    Property property = (Property) value;
-                    setText(property.getName()); // Display the property name
-                }
-                return this;
-            }
-        });
-
-        int option = JOptionPane.showOptionDialog(
-                null,
-                propertyComboBox,
-                "Select a Property to Mortgage",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                new Object[]{"Mortgage", "Cancel"},
-                "Mortgage"
-        );
-
-        if (option == JOptionPane.OK_OPTION) {
-            Property selectedProperty = (Property) propertyComboBox.getSelectedItem();
-            boolean success = currentPlayer.mortgageProperty(selectedProperty);
-            if (success) {
-                updateProfiles();
-                board.repaint();
-            }
-        }
-    }
-
-    private void showUnmortgageOptions() {
-        Player currentPlayer = players.get(currentIndex);
-        List<Property> unmortgagableProperties = new ArrayList<>();
-        for (Property property : currentPlayer.getOwnedProperties()) {
-            if (property.isMortgaged()) {
-                unmortgagableProperties.add(property);
-            }
-        }
-
-        if (unmortgagableProperties.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "You have no properties eligible for unmortgaging.");
-            return;
-        }
-
-        Property[] propertyArray = unmortgagableProperties.toArray(new Property[0]);
-        JComboBox<Property> propertyComboBox = new JComboBox<>(propertyArray);
-        // Use a custom renderer to display property names in the JComboBox
-        propertyComboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Property) {
-                    Property property = (Property) value;
-                    setText(property.getName()); // Display the property name
-                }
-                return this;
-            }
-        });
-
-        int option = JOptionPane.showOptionDialog(
-                null,
-                propertyComboBox,
-                "Select a Property to Unmortgage",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                new Object[]{"Unmortgage", "Cancel"},
-                "Unmortgage"
-        );
-
-        if (option == JOptionPane.OK_OPTION) {
-            Property selectedProperty = (Property) propertyComboBox.getSelectedItem();
-            boolean success = currentPlayer.unmortgageProperty(selectedProperty);
-            if (success) {
-                updateProfiles();
-                board.repaint();
-            }
-        }
+        properties.put(37, new Property("Park Place", 350, 35, new int[]{35, 175, 500, 1100, 1300}));
+        properties.put(39, new Property("Boardwalk", 400, 50, new int[]{50, 200, 600, 1400, 1700}));
     }
 }
 
