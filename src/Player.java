@@ -127,4 +127,25 @@ public class Player {
         }
         return false;
     }
+
+
+    public boolean sellHouse(Property property)
+    {
+        if(ownedProperties.contains(property)&&(property.getHouseCount() > 0)) {
+           
+            int sellValue = property.getHousePrice() /2;
+            property.removeHouse();
+            
+            this.addMoney(sellValue);
+            JOptionPane.showMessageDialog(null, getName() + "  sold a house on " + property.getName() + " for $ " + sellValue);
+            return true;
+        }
+        else 
+        {
+           
+            JOptionPane.showMessageDialog(null, property.getName() + " has no house to sell");
+            return false;
+        }
+    
+    }
 }

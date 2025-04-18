@@ -4,16 +4,20 @@ import javax.swing.*;
 public class Property {
     private final String name;
     private final int price;
+    private final int housePrice;
     private int rent = 0;
     private Player owner;
     private boolean isMortgaged;
+    private  int houseCount;
 
-    public Property(String name, int price, int rent) {
+    public Property(String name, int price, int rent, int housePrice) {
         this.name = name;
         this.price = price;
         this.rent = rent;
         this.owner = null;
         this.isMortgaged = false;
+        this.housePrice = housePrice;
+        this.houseCount=0;
     }
 
     public String getName() {
@@ -90,5 +94,34 @@ public class Property {
 
     public int getUnmortgageCost() {
         return (int) (getMortgageValue() * 1.1);
+    }
+
+    public void addHouse() {
+        if(houseCount < 4)
+        {
+            houseCount++;
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Maximum houses reached." );
+        }
+        
+    }
+
+    public int getHouseCount()
+    {
+        return houseCount;
+    }
+
+
+    public void removeHouse()
+    {
+        if(houseCount >0)
+        {
+            houseCount--;
+        }
+    }
+    public int getHousePrice()
+    {
+        return housePrice;
     }
 }
