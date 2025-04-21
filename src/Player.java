@@ -3,7 +3,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// Class to represent a player in the game
 public class Player {
     private final String name;
     private final Color color;
@@ -90,6 +89,13 @@ public class Player {
         return ownedProperties;
     }
 
+    public boolean ownsFullColorSet(String colorGroup) {
+        long owned = ownedProperties.stream()
+                .filter(p -> p.getColorGroup().equalsIgnoreCase(colorGroup))
+                .count();
+        return owned == Property.colorGroupCount(colorGroup);
+    }
+
     public void handleBankruptcy() {
         if (!eliminated) {
             eliminated = true;
@@ -126,5 +132,17 @@ public class Player {
             }
         }
         return false;
+    }
+
+    public boolean sellHouse(Property property) {
+        if (ownedProperties.contains(property) && (property.getHouseCount() > 0)) {
+            int sellValue = property.getHousePrice() / 2;
+            property.removeHouse();
+            this.addMoney(sellValue);
+            return true;
+        } else {
+            System.out.println(property.getName() + " has no house to sell");
+            return false;
+        }
     }
 }

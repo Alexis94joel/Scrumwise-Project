@@ -7,9 +7,8 @@ public class GameInitializer {
     public static void main(String[] args) {
         TokenManager tokenManager = new TokenManager();
         List<Player> players = new ArrayList<>();
-        int numPlayers = 0;
+        int numPlayers;
 
-        // Get number of players (2-8)
         while (true) {
             String input = JOptionPane.showInputDialog("Enter number of players (2-8):");
 
@@ -28,48 +27,35 @@ public class GameInitializer {
         }
 
         List<String> playerNames = new ArrayList<>();
+        Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.PINK, Color.CYAN, Color.MAGENTA};
 
         for (int i = 1; i <= numPlayers; i++) {
             String defaultName = "Player " + i;
-            String name;
-            while (true) {
-                // Show dialog with default name that can be edited
-                name = (String) JOptionPane.showInputDialog(
-                        null,
-                        "Enter name for Player " + i + " (or keep default):",
-                        "Player Name Selection",
-                        JOptionPane.PLAIN_MESSAGE,
-                        null,
-                        null,
-                        defaultName
-                );
+            String name = JOptionPane.showInputDialog(null, "Enter name for Player " + i + " (Leave blank for default):", defaultName);
 
+            if (name == null) {
+                JOptionPane.showMessageDialog(null, "Game setup canceled.");
+                System.exit(0);
+            }
+
+            name = name.trim();
+            if (name.isEmpty()) name = defaultName;
+
+            while (playerNames.contains(name)) {
+                name = JOptionPane.showInputDialog(null, "Name already taken. Enter a different name for Player " + i + ":", defaultName);
                 if (name == null) {
                     JOptionPane.showMessageDialog(null, "Game setup canceled.");
                     System.exit(0);
                 }
-
                 name = name.trim();
-
-                if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Player name cannot be empty. Using default name.");
-                    name = defaultName;
-                }
-
-                if (playerNames.contains(name)) {
-                    JOptionPane.showMessageDialog(null, "Player name already exists. Please enter a unique name.");
-                } else {
-                    playerNames.add(name);
-                    break;
-                }
+                if (name.isEmpty()) name = defaultName;
             }
 
-            Color color = new Color[]{Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW,
-                    Color.ORANGE, Color.PINK, Color.CYAN, Color.MAGENTA}[i % 8];
+            playerNames.add(name);
+            Color color = colors[(i - 1) % colors.length];
             players.add(new Player(name, color));
         }
 
-        // Proceed to token selection
         SwingUtilities.invokeLater(() -> new TokenSelectionUI(players, tokenManager, () -> new GameUI(players)));
     }
 }

@@ -17,8 +17,10 @@ public class GameUI {
     private final JPanel sidePanel;
     private final JPanel[] playerPropertyPanels;
     private final JButton rollButton;
-    private JButton mortgageButton; // Added for mortgage
-    private JButton unmortgageButton; // Added for unmortgage
+    private JButton mortgageButton;
+    private JButton unmortgageButton;
+    private JButton buildHouseButton;
+    private JButton sellHouseButton;// Added buildHouseButton
 
     public GameUI(List<Player> players) {
         instance = this;
@@ -59,14 +61,74 @@ public class GameUI {
         unmortgageButton.setFont(new Font("Arial", Font.BOLD, 16));
         unmortgageButton.addActionListener(e -> showUnmortgageOptions());
 
+        buildHouseButton = new JButton("Build House"); // Initialize buildHouseButton
+        buildHouseButton.setFont(new Font("Arial", Font.BOLD, 16));
+        buildHouseButton.addActionListener(e -> showBuildHouseOptions()); // Add action listener
+
+        sellHouseButton = new JButton("Sell House"); // Initialize sellHouseButton
+        sellHouseButton.setFont(new Font("Arial", Font.BOLD, 16));
+        sellHouseButton.addActionListener(e -> showSellHouseOptions()); // Add action listener for sellHouseButton
         sidePanel.add(diceLabel);
         sidePanel.add(rollButton);
-        sidePanel.add(mortgageButton); // Add mortgage button
-        sidePanel.add(unmortgageButton); // Add unmortgage button
+        sidePanel.add(mortgageButton);
+        sidePanel.add(unmortgageButton);
+        sidePanel.add(buildHouseButton); // Add buildHouseButton to sidePanel
+        sidePanel.add(sellHouseButton); // Add sellHouseButton to sidePanel
         frame.add(sidePanel, BorderLayout.EAST);
 
         updateProfiles();
         frame.setVisible(true);
+    }
+
+    public static boolean playerOwnsColorGroup(Player player, Property property) {
+        List<Property> colorGroup = getColorGroup(property);
+        if (colorGroup == null) return false;
+
+        for (Property p : colorGroup) {
+            if (p.getOwner() != player) return false;
+        }
+        return true;
+    }
+
+    private static List<Property> getColorGroup(Property property) {
+        List<Property> group = new ArrayList<>();
+
+        String name = property.getName();
+        if (name.contains("Mediterranean") || name.contains("Baltic")) {
+            group.add(instance.properties.get(1));
+            group.add(instance.properties.get(3));
+        } else if (name.contains("Oriental") || name.contains("Vermont") || name.contains("Connecticut")) {
+            group.add(instance.properties.get(6));
+            group.add(instance.properties.get(8));
+            group.add(instance.properties.get(9));
+        } else if (name.contains("St. Charles") || name.contains("States") || name.contains("Virginia")) {
+            group.add(instance.properties.get(11));
+            group.add(instance.properties.get(13));
+            group.add(instance.properties.get(14));
+        } else if (name.contains("St. James") || name.contains("Tennessee") || name.contains("New York")) {
+            group.add(instance.properties.get(16));
+            group.add(instance.properties.get(18));
+            group.add(instance.properties.get(19));
+        } else if (name.contains("Kentucky") || name.contains("Indiana") || name.contains("Illinois")) {
+            group.add(instance.properties.get(21));
+            group.add(instance.properties.get(23));
+            group.add(instance.properties.get(24));
+        } else if (name.contains("Atlantic") || name.contains("Ventnor") || name.contains("Marvin")) {
+            group.add(instance.properties.get(26));
+            group.add(instance.properties.get(27));
+            group.add(instance.properties.get(29));
+        } else if (name.contains("Pacific") || name.contains("North Carolina") || name.contains("Pennsylvania")) {
+            group.add(instance.properties.get(31));
+            group.add(instance.properties.get(32));
+            group.add(instance.properties.get(34));
+        } else if (name.contains("Park") || name.contains("Boardwalk")) {
+            group.add(instance.properties.get(37));
+            group.add(instance.properties.get(39));
+        } else {
+            return null;
+        }
+
+        return group;
     }
 
     private void rollDice() {
@@ -198,8 +260,10 @@ public class GameUI {
                 }
                 instance.sidePanel.add(instance.diceLabel);
                 instance.sidePanel.add(instance.rollButton);
-                instance.sidePanel.add(instance.mortgageButton); // Add mortgage button
-                instance.sidePanel.add(instance.unmortgageButton); // Add unmortgage button
+                instance.sidePanel.add(instance.mortgageButton);
+                instance.sidePanel.add(instance.unmortgageButton);
+                instance.sidePanel.add(instance.buildHouseButton); // Add buildHouseButton here
+                instance.sidePanel.add(instance.sellHouseButton);
                 instance.sidePanel.revalidate();
                 instance.board.repaint();
             });
@@ -222,35 +286,36 @@ public class GameUI {
     }
 
     private void initializeProperties() {
-        properties.put(1, new Property("Mediterranean Avenue", 60, 2));
-        properties.put(3, new Property("Baltic Avenue", 60, 4));
+        properties.put(1, new Property("Mediterranean Avenue", 60, 2, new int[]{2, 10, 30, 90, 160}, 50));
+        properties.put(3, new Property("Baltic Avenue", 60, 4, new int[]{4, 20, 60, 180, 320}, 50));
         properties.put(5, new Railroad("Reading Railroad", 200, 25));
-        properties.put(6, new Property("Oriental Avenue", 100, 6));
-        properties.put(8, new Property("Vermont Avenue", 100, 6));
-        properties.put(9, new Property("Connecticut Avenue", 120, 8));
-        properties.put(11, new Property("St. Charles Place", 140, 10));
+        properties.put(6, new Property("Oriental Avenue", 100, 6, new int[]{6, 30, 90, 270, 400}, 50));
+        properties.put(8, new Property("Vermont Avenue", 100, 6, new int[]{6, 30, 90, 270, 400}, 50));
+        properties.put(9, new Property("Connecticut Avenue", 120, 8, new int[]{8, 40, 100, 300, 450}, 50));
+        properties.put(11, new Property("St. Charles Place", 140, 10, new int[]{10, 50, 150, 450, 625}, 100));
         properties.put(12, new Utility("Electric Company", 150, 0));
-        properties.put(13, new Property("States Avenue", 140, 10));
-        properties.put(14, new Property("Virginia Avenue", 160, 12));
+        properties.put(13, new Property("States Avenue", 140, 10, new int[]{10, 50, 150, 450, 625}, 100));
+        properties.put(14, new Property("Virginia Avenue", 160, 12, new int[]{12, 60, 180, 500, 700}, 100));
         properties.put(15, new Railroad("Pennsylvania Railroad", 200, 25));
-        properties.put(16, new Property("St. James Place", 180, 14));
-        properties.put(18, new Property("Tennessee Avenue", 180, 14));
-        properties.put(19, new Property("New York Ave", 200, 16));
-        properties.put(21, new Property("Kentucky Avenue", 220, 18));
-        properties.put(23, new Property("Indiana Avenue", 220, 18));
-        properties.put(24, new Property("Illinois Avenue", 240, 20));
+        properties.put(16, new Property("St. James Place", 180, 14, new int[]{14, 70, 200, 550, 750}, 100));
+        properties.put(18, new Property("Tennessee Avenue", 180, 14, new int[]{14, 70, 200, 550, 750}, 100));
+        properties.put(19, new Property("New York Ave", 200, 16, new int[]{16, 80, 220, 600, 800}, 100));
+        properties.put(21, new Property("Kentucky Avenue", 220, 18, new int[]{18, 90, 250, 700, 875}, 150));
+        properties.put(23, new Property("Indiana Avenue", 220, 18, new int[]{18, 90, 250, 700, 875}, 150));
+        properties.put(24, new Property("Illinois Avenue", 240, 20, new int[]{20, 100, 300, 750, 925}, 150));
         properties.put(25, new Railroad("B&O Railroad", 200, 25));
-        properties.put(26, new Property("Atlantic Avenue", 260, 22));
-        properties.put(27, new Property("Ventnor Avenue", 260, 22));
+        properties.put(26, new Property("Atlantic Avenue", 260, 22, new int[]{22, 110, 330, 800, 975}, 150));
+        properties.put(27, new Property("Ventnor Avenue", 260, 22, new int[]{22, 110, 330, 800, 975}, 150));
         properties.put(28, new Utility("Water Works", 150, 0));
-        properties.put(29, new Property("Marvin Gardens", 280, 24));
-        properties.put(31, new Property("Pacific Avenue", 300, 26));
-        properties.put(32, new Property("North Carolina Avenue", 300, 26));
-        properties.put(34, new Property("Pennsylvania Avenue", 320, 28));
+        properties.put(29, new Property("Marvin Gardens", 280, 24, new int[]{24, 120, 360, 850, 1025}, 150));
+        properties.put(31, new Property("Pacific Avenue", 300, 26, new int[]{26, 130, 390, 900, 1100}, 200));
+        properties.put(32, new Property("North Carolina Avenue", 300, 26, new int[]{26, 130, 390, 900, 1100}, 200));
+        properties.put(34, new Property("Pennsylvania Avenue", 320, 28, new int[]{28, 150, 450, 1000, 1200}, 200));
         properties.put(35, new Railroad("Short Line Railroad", 200, 25));
-        properties.put(37, new Property("Park Place", 350, 35));
-        properties.put(39, new Property("Boardwalk", 400, 50));
+        properties.put(37, new Property("Park Place", 350, 35, new int[]{35, 175, 500, 1100, 1300}, 200));
+        properties.put(39, new Property("Boardwalk", 400, 50, new int[]{50, 200, 600, 1400, 1700}, 200));
     }
+
     private void showMortgageOptions() {
         Player currentPlayer = players.get(currentIndex);
         List<Property> mortgagableProperties = new ArrayList<>();
@@ -267,14 +332,13 @@ public class GameUI {
 
         Property[] propertyArray = mortgagableProperties.toArray(new Property[0]);
         JComboBox<Property> propertyComboBox = new JComboBox<>(propertyArray);
-        // Use a custom renderer to display property names in the JComboBox
         propertyComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof Property) {
                     Property property = (Property) value;
-                    setText(property.getName()); // Display the property name
+                    setText(property.getName());
                 }
                 return this;
             }
@@ -317,14 +381,13 @@ public class GameUI {
 
         Property[] propertyArray = unmortgagableProperties.toArray(new Property[0]);
         JComboBox<Property> propertyComboBox = new JComboBox<>(propertyArray);
-        // Use a custom renderer to display property names in the JComboBox
         propertyComboBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof Property) {
                     Property property = (Property) value;
-                    setText(property.getName()); // Display the property name
+                    setText(property.getName());
                 }
                 return this;
             }
@@ -350,5 +413,111 @@ public class GameUI {
             }
         }
     }
-}
 
+    private void showBuildHouseOptions() { // New method to show build house options
+        Player currentPlayer = players.get(currentIndex);
+        List<Property> buildableProperties = new ArrayList<>();
+        for (Property property : currentPlayer.getOwnedProperties()) {
+            if (playerOwnsColorGroup(currentPlayer, property) && property.getHouseCount() < 5) {
+                buildableProperties.add(property);
+            }
+        }
+
+        if (buildableProperties.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You have no properties eligible for building houses.");
+            return;
+        }
+
+        Property[] propertyArray = buildableProperties.toArray(new Property[0]);
+        JComboBox<Property> propertyComboBox = new JComboBox<>(propertyArray);
+        propertyComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Property) {
+                    Property property = (Property) value;
+                    setText(property.getName());
+                }
+                return this;
+            }
+        });
+
+        int option = JOptionPane.showOptionDialog(
+                null,
+                propertyComboBox,
+                "Select a Property to Build a House",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                new Object[]{"Build House", "Cancel"},
+                "Build House"
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            Property selectedProperty = (Property) propertyComboBox.getSelectedItem();
+            // Assume the cost of building a house is half of the property price.
+            int houseCost = selectedProperty.getPrice() / 2;
+            if (currentPlayer.getMoney() >= houseCost) {
+                currentPlayer.deductMoney(houseCost);
+                selectedProperty.buildHouse(currentPlayer);
+                updateProfiles();
+                board.repaint();
+            } else {
+                JOptionPane.showMessageDialog(null, "You do not have enough money to build a house on this property.");
+            }
+        }
+    }
+
+    private void showSellHouseOptions() {
+        Player currentPlayer = players.get(currentIndex);
+        List<Property> sellableProperties = new ArrayList<>();
+        for (Property property : currentPlayer.getOwnedProperties()) {
+            if (property.getHouseCount() > 0) {
+                sellableProperties.add(property);
+            }
+        }
+
+        if (sellableProperties.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You have no properties with houses to sell.");
+            return;
+        }
+
+        Property[] propertyArray = sellableProperties.toArray(new Property[0]);
+        JComboBox<Property> propertyComboBox = new JComboBox<>(propertyArray);
+        propertyComboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Property) {
+                    Property property = (Property) value;
+                    setText(property.getName());
+                }
+                return this;
+            }
+        });
+
+        int option = JOptionPane.showOptionDialog(
+                null,
+                propertyComboBox,
+                "Select a Property to Sell a House",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                new Object[]{"Sell House", "Cancel"},
+                "Sell House"
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            Property selectedProperty = (Property) propertyComboBox.getSelectedItem();
+            boolean success = currentPlayer.sellHouse(selectedProperty); // Call the sellHouse method in Player
+            if (success) {
+                int sellValue = selectedProperty.getHousePrice() / 2;
+                JOptionPane.showMessageDialog(null, currentPlayer.getName() + " sold a house on " + selectedProperty.getName() + " for $" + sellValue);
+                updateProfiles();
+                board.repaint();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to sell a house on the selected property.");
+            }
+        }
+    }
+}

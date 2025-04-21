@@ -7,6 +7,21 @@ public class Property {
     private int rent = 0;
     private Player owner;
     private boolean isMortgaged;
+    private final int[] houseRents;
+    private int houseCount = 0;
+    private final String colorGroup;
+    private int housePrice = 0;
+
+    public Property(String name, int price, int baseRent, int[] houseRents, int housePrice) {
+        this.name = name;
+        this.price = price;
+        this.rent = baseRent;
+        this.houseRents = houseRents;
+        this.owner = null;
+        this.isMortgaged = false;
+        this.colorGroup = determineColorGroup(name);
+        this.housePrice = housePrice;
+    }
 
     public Property(String name, int price, int rent) {
         this.name = name;
@@ -14,6 +29,21 @@ public class Property {
         this.rent = rent;
         this.owner = null;
         this.isMortgaged = false;
+        this.houseRents = new int[0];
+        this.colorGroup = "None";
+        this.housePrice = housePrice;
+    }
+
+    private String determineColorGroup(String name) {
+        if (name.contains("Mediterranean") || name.contains("Baltic")) return "Brown";
+        if (name.contains("Oriental") || name.contains("Vermont") || name.contains("Connecticut")) return "Light Blue";
+        if (name.contains("St. Charles") || name.contains("States") || name.contains("Virginia")) return "Pink";
+        if (name.contains("St. James") || name.contains("Tennessee") || name.contains("New York")) return "Orange";
+        if (name.contains("Kentucky") || name.contains("Indiana") || name.contains("Illinois")) return "Red";
+        if (name.contains("Atlantic") || name.contains("Ventnor") || name.contains("Marvin")) return "Yellow";
+        if (name.contains("Pacific") || name.contains("North Carolina") || name.contains("Pennsylvania")) return "Green";
+        if (name.contains("Park") || name.contains("Boardwalk")) return "Dark Blue";
+        return "None";
     }
 
     public String getName() {
@@ -27,6 +57,9 @@ public class Property {
     public int getRent() {
         if (isMortgaged) {
             return 0;
+        }
+        if (houseCount > 0 && houseCount <= houseRents.length) {
+            return houseRents[houseCount - 1];
         }
         return rent;
     }
@@ -68,7 +101,11 @@ public class Property {
 
     public void landOnProperty(Player player, int diceRoll) {
         if (owner != null && owner != player) {
-            payRent(player, rent);
+            int rentToCharge = getRent();
+            if (houseCount == 0 && GameUI.playerOwnsColorGroup(owner, this)) {
+                rentToCharge *= 2;
+            }
+            payRent(player, rentToCharge);
         }
     }
 
@@ -90,5 +127,51 @@ public class Property {
 
     public int getUnmortgageCost() {
         return (int) (getMortgageValue() * 1.1);
+    }
+
+    public int getHouseCount() {
+        return houseCount;
+    }
+
+    public void buildHouse(Player player) {
+        if (houseCount < 5) {
+            int houseCost = getHousePrice();
+            if (player.getMoney() >= houseCost) {
+                player.deductMoney(houseCost);
+                houseCount++;
+                JOptionPane.showMessageDialog(null, player.getName() + " built a house on " + name + ". Total houses: " + houseCount);
+                GameUI.updateProfiles(player, owner);
+            } else {
+                JOptionPane.showMessageDialog(null, player.getName() + " does not have enough money to build a house on " + name);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Maximum houses reached on " + name);
+        }
+    }
+
+    public void removeHouse() {
+        if (houseCount > 0) {
+            houseCount--;
+        }
+    }
+
+    public int getHousePrice() {
+        return housePrice;
+    }
+
+    public void resetHouses() {
+        this.houseCount = 0;
+    }
+
+    public String getColorGroup() {
+        return colorGroup;
+    }
+
+    public static int colorGroupCount(String colorGroup) {
+        return switch (colorGroup.toLowerCase()) {
+            case "brown", "dark blue" -> 2;
+            case "light blue", "pink", "orange", "red", "yellow", "green" -> 3;
+            default -> 0;
+        };
     }
 }
