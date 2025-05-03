@@ -20,7 +20,7 @@ public class GameUI {
     private JButton mortgageButton;
     private JButton unmortgageButton;
     private JButton buildHouseButton;
-    private JButton sellHouseButton;// Added buildHouseButton
+    private JButton sellHouseButton;
 
     public GameUI(List<Player> players) {
         instance = this;
@@ -61,19 +61,20 @@ public class GameUI {
         unmortgageButton.setFont(new Font("Arial", Font.BOLD, 16));
         unmortgageButton.addActionListener(e -> showUnmortgageOptions());
 
-        buildHouseButton = new JButton("Build House"); // Initialize buildHouseButton
+        buildHouseButton = new JButton("Build House");
         buildHouseButton.setFont(new Font("Arial", Font.BOLD, 16));
-        buildHouseButton.addActionListener(e -> showBuildHouseOptions()); // Add action listener
+        buildHouseButton.addActionListener(e -> showBuildHouseOptions());
 
-        sellHouseButton = new JButton("Sell House"); // Initialize sellHouseButton
+        sellHouseButton = new JButton("Sell House");
         sellHouseButton.setFont(new Font("Arial", Font.BOLD, 16));
-        sellHouseButton.addActionListener(e -> showSellHouseOptions()); // Add action listener for sellHouseButton
+        sellHouseButton.addActionListener(e -> showSellHouseOptions());
+
         sidePanel.add(diceLabel);
         sidePanel.add(rollButton);
         sidePanel.add(mortgageButton);
         sidePanel.add(unmortgageButton);
-        sidePanel.add(buildHouseButton); // Add buildHouseButton to sidePanel
-        sidePanel.add(sellHouseButton); // Add sellHouseButton to sidePanel
+        sidePanel.add(buildHouseButton);
+        sidePanel.add(sellHouseButton);
         frame.add(sidePanel, BorderLayout.EAST);
 
         updateProfiles();
@@ -262,8 +263,9 @@ public class GameUI {
                 instance.sidePanel.add(instance.rollButton);
                 instance.sidePanel.add(instance.mortgageButton);
                 instance.sidePanel.add(instance.unmortgageButton);
-                instance.sidePanel.add(instance.buildHouseButton); // Add buildHouseButton here
+                instance.sidePanel.add(instance.buildHouseButton);
                 instance.sidePanel.add(instance.sellHouseButton);
+
                 instance.sidePanel.revalidate();
                 instance.board.repaint();
             });
@@ -286,34 +288,34 @@ public class GameUI {
     }
 
     private void initializeProperties() {
-        properties.put(1, new Property("Mediterranean Avenue", 60, 2, new int[]{2, 10, 30, 90, 160}, 50));
-        properties.put(3, new Property("Baltic Avenue", 60, 4, new int[]{4, 20, 60, 180, 320}, 50));
+        properties.put(1, new Property("Mediterranean Avenue", 60, 2, new int[]{10, 30, 90, 160, 250}, 50));
+        properties.put(3, new Property("Baltic Avenue", 60, 4, new int[]{20, 60, 180, 320, 450}, 50));
         properties.put(5, new Railroad("Reading Railroad", 200, 25));
-        properties.put(6, new Property("Oriental Avenue", 100, 6, new int[]{6, 30, 90, 270, 400}, 50));
-        properties.put(8, new Property("Vermont Avenue", 100, 6, new int[]{6, 30, 90, 270, 400}, 50));
-        properties.put(9, new Property("Connecticut Avenue", 120, 8, new int[]{8, 40, 100, 300, 450}, 50));
-        properties.put(11, new Property("St. Charles Place", 140, 10, new int[]{10, 50, 150, 450, 625}, 100));
+        properties.put(6, new Property("Oriental Avenue", 100, 6, new int[]{30, 90, 270, 400, 550}, 50));
+        properties.put(8, new Property("Vermont Avenue", 100, 6, new int[]{30, 90, 270, 400, 550}, 50));
+        properties.put(9, new Property("Connecticut Avenue", 120, 8, new int[]{40, 100, 300, 450, 600}, 50));
+        properties.put(11, new Property("St. Charles Place", 140, 10, new int[]{50, 150, 450, 625, 750}, 100));
         properties.put(12, new Utility("Electric Company", 150, 0));
-        properties.put(13, new Property("States Avenue", 140, 10, new int[]{10, 50, 150, 450, 625}, 100));
-        properties.put(14, new Property("Virginia Avenue", 160, 12, new int[]{12, 60, 180, 500, 700}, 100));
+        properties.put(13, new Property("States Avenue", 140, 10, new int[]{50, 150, 450, 625, 750}, 100));
+        properties.put(14, new Property("Virginia Avenue", 160, 12, new int[]{60, 180, 500, 700, 900}, 100));
         properties.put(15, new Railroad("Pennsylvania Railroad", 200, 25));
-        properties.put(16, new Property("St. James Place", 180, 14, new int[]{14, 70, 200, 550, 750}, 100));
-        properties.put(18, new Property("Tennessee Avenue", 180, 14, new int[]{14, 70, 200, 550, 750}, 100));
-        properties.put(19, new Property("New York Ave", 200, 16, new int[]{16, 80, 220, 600, 800}, 100));
-        properties.put(21, new Property("Kentucky Avenue", 220, 18, new int[]{18, 90, 250, 700, 875}, 150));
-        properties.put(23, new Property("Indiana Avenue", 220, 18, new int[]{18, 90, 250, 700, 875}, 150));
-        properties.put(24, new Property("Illinois Avenue", 240, 20, new int[]{20, 100, 300, 750, 925}, 150));
+        properties.put(16, new Property("St. James Place", 180, 14, new int[]{70, 200, 550, 750, 950}, 100));
+        properties.put(18, new Property("Tennessee Avenue", 180, 14, new int[]{70, 200, 550, 750, 950}, 100));
+        properties.put(19, new Property("New York Ave", 200, 16, new int[]{80, 220, 600, 800, 1000}, 100));
+        properties.put(21, new Property("Kentucky Avenue", 220, 18, new int[]{90, 250, 700, 875, 1050}, 150));
+        properties.put(23, new Property("Indiana Avenue", 220, 18, new int[]{90, 250, 700, 875, 1050}, 150));
+        properties.put(24, new Property("Illinois Avenue", 240, 20, new int[]{100, 300, 750, 925, 1100}, 150));
         properties.put(25, new Railroad("B&O Railroad", 200, 25));
-        properties.put(26, new Property("Atlantic Avenue", 260, 22, new int[]{22, 110, 330, 800, 975}, 150));
-        properties.put(27, new Property("Ventnor Avenue", 260, 22, new int[]{22, 110, 330, 800, 975}, 150));
+        properties.put(26, new Property("Atlantic Avenue", 260, 22, new int[]{110, 330, 800, 975, 1150}, 150));
+        properties.put(27, new Property("Ventnor Avenue", 260, 22, new int[]{110, 330, 800, 975, 1150}, 150));
         properties.put(28, new Utility("Water Works", 150, 0));
-        properties.put(29, new Property("Marvin Gardens", 280, 24, new int[]{24, 120, 360, 850, 1025}, 150));
-        properties.put(31, new Property("Pacific Avenue", 300, 26, new int[]{26, 130, 390, 900, 1100}, 200));
-        properties.put(32, new Property("North Carolina Avenue", 300, 26, new int[]{26, 130, 390, 900, 1100}, 200));
-        properties.put(34, new Property("Pennsylvania Avenue", 320, 28, new int[]{28, 150, 450, 1000, 1200}, 200));
+        properties.put(29, new Property("Marvin Gardens", 280, 24, new int[]{120, 360, 850, 1025, 1200}, 150));
+        properties.put(31, new Property("Pacific Avenue", 300, 26, new int[]{130, 390, 900, 1100, 1275}, 200));
+        properties.put(32, new Property("North Carolina Avenue", 300, 26, new int[]{130, 390, 900, 1100, 1275}, 200));
+        properties.put(34, new Property("Pennsylvania Avenue", 320, 28, new int[]{150, 450, 1000, 1200, 1400}, 200));
         properties.put(35, new Railroad("Short Line Railroad", 200, 25));
-        properties.put(37, new Property("Park Place", 350, 35, new int[]{35, 175, 500, 1100, 1300}, 200));
-        properties.put(39, new Property("Boardwalk", 400, 50, new int[]{50, 200, 600, 1400, 1700}, 200));
+        properties.put(37, new Property("Park Place", 350, 35, new int[]{175, 500, 1100, 1300, 1500}, 200));
+        properties.put(39, new Property("Boardwalk", 400, 50, new int[]{200, 600, 1400, 1700, 2000}, 200));
     }
 
     private void showMortgageOptions() {
@@ -414,7 +416,7 @@ public class GameUI {
         }
     }
 
-    private void showBuildHouseOptions() { // New method to show build house options
+    private void showBuildHouseOptions() {
         Player currentPlayer = players.get(currentIndex);
         List<Property> buildableProperties = new ArrayList<>();
         for (Property property : currentPlayer.getOwnedProperties()) {
@@ -455,11 +457,11 @@ public class GameUI {
 
         if (option == JOptionPane.OK_OPTION) {
             Property selectedProperty = (Property) propertyComboBox.getSelectedItem();
-            // Assume the cost of building a house is half of the property price.
-            int houseCost = selectedProperty.getPrice() / 2;
+            int houseCost = selectedProperty.getHousePrice();
             if (currentPlayer.getMoney() >= houseCost) {
                 currentPlayer.deductMoney(houseCost);
-                selectedProperty.buildHouse(currentPlayer);
+                // Corrected line: Pass the HashMap (properties) and DisplayToken (board)
+                selectedProperty.buildHouse(currentPlayer, properties, board);
                 updateProfiles();
                 board.repaint();
             } else {
@@ -509,7 +511,7 @@ public class GameUI {
 
         if (option == JOptionPane.OK_OPTION) {
             Property selectedProperty = (Property) propertyComboBox.getSelectedItem();
-            boolean success = currentPlayer.sellHouse(selectedProperty); // Call the sellHouse method in Player
+            boolean success = currentPlayer.sellHouse(selectedProperty);
             if (success) {
                 int sellValue = selectedProperty.getHousePrice() / 2;
                 JOptionPane.showMessageDialog(null, currentPlayer.getName() + " sold a house on " + selectedProperty.getName() + " for $" + sellValue);

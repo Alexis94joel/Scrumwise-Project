@@ -1,4 +1,8 @@
 import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.List;
+
 
 // Class to represent a property in the game
 public class Property {
@@ -133,16 +137,35 @@ public class Property {
         return houseCount;
     }
 
-    public void buildHouse(Player player) {
+    // Modified buildHouse method to ensure HashMap update and repaint.
+    public void buildHouse(Player player, HashMap<Integer, Property> properties, DisplayToken displayToken) {
         if (houseCount < 5) {
             int houseCost = getHousePrice();
             if (player.getMoney() >= houseCost) {
                 player.deductMoney(houseCost);
                 houseCount++;
-                JOptionPane.showMessageDialog(null, player.getName() + " built a house on " + name + ". Total houses: " + houseCount);
+                JOptionPane.showMessageDialog(null,
+                        player.getName() + " built a house on " + name + ". Total houses: " + houseCount);
                 GameUI.updateProfiles(player, owner);
+
+                int propertyIndex = -1;
+                for (Integer key : properties.keySet()) {
+                    if (properties.get(key) == this) {
+                        propertyIndex = key;
+                        break;
+                    }
+                }
+
+                if (propertyIndex != -1) {
+                    properties.put(propertyIndex, this); // Update the HashMap
+                    displayToken.repaint(); // Force the display to update
+                } else {
+                    System.err.println("Error: Property not found in HashMap when building house.");
+                }
+
             } else {
-                JOptionPane.showMessageDialog(null, player.getName() + " does not have enough money to build a house on " + name);
+                JOptionPane.showMessageDialog(null,
+                        player.getName() + " does not have enough money to build a house on " + name);
             }
         } else {
             JOptionPane.showMessageDialog(null, "Maximum houses reached on " + name);
