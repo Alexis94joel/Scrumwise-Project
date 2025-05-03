@@ -107,15 +107,22 @@ public class DisplayToken extends JPanel {
             g.drawString(propertyName, x + 5, y + height / 2);
         }
 
-        // Draw houses if any
+        // Draw houses and hotels
         Property property = properties.get(index);
-        if (property != null && property.getOwner() != null && property.getHouseCount() > 0) {
-            g.setColor(Color.GREEN);
-            int houseSize = 8;
-            int gap = 3;
-            int startX = x + width / 2 - (property.getHouseCount() * (houseSize + gap)) / 2;
-            for (int i = 0; i < property.getHouseCount(); i++) {
-                g.fillRect(startX + i * (houseSize + gap), y + height - 12, houseSize, houseSize);
+        if (property != null && property.getOwner() != null) {
+            int houseCount = property.getHouseCount();
+            if (houseCount > 0 && houseCount < 5) {
+                g.setColor(Color.GREEN); // Color for houses
+                int houseSize = 8;
+                int gap = 3;
+                int startX = x + width / 2 - (houseCount * (houseSize + gap)) / 2;
+                for (int i = 0; i < houseCount; i++) {
+                    g.fillRect(startX + i * (houseSize + gap), y + height - 12, houseSize, houseSize);
+                }
+            } else if (houseCount == 5) {
+                g.setColor(new Color(139, 0, 0));  // Dark red for hotels
+                int hotelSize = 12;
+                g.fillRect(x + width / 2 - hotelSize / 2, y + height - 15, hotelSize, hotelSize);
             }
         }
     }
