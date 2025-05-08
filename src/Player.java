@@ -55,14 +55,24 @@ public class Player {
         return (oldPosition + steps) >= 40;
     }
 
-    public void deductMoney(int amount) {
+    public void deductMoney(int amount, Player creditor) {
         if (amount > 0 && money >= amount) {
             money -= amount;
         } else {
             JOptionPane.showMessageDialog(null, name + " does not have enough money!");
-            handleBankruptcy();
+            // If there's a creditor, send assets to the creditor; otherwise, send assets to the bank
+            if (creditor != null) {
+                handleBankruptcy(creditor);  // Transfer assets to the creditor
+            } else {
+                handleBankruptcy();  // Normal bankruptcy, assets go to the bank
+            }
         }
     }
+    public void deductMoney(int amount) {
+        money -= amount;
+    }
+
+
 
     public void addMoney(int amount) {
         if (amount > 0) {
@@ -106,6 +116,28 @@ public class Player {
             ownedProperties.clear();
         }
     }
+
+    public void handleBankruptcy(Player creditor) {
+        if (!eliminated) {
+            eliminated = true;
+            JOptionPane.showMessageDialog(null, name + " is bankrupt and all assets are transferred to " + creditor.getName() + "!");
+
+            // Transfer all properties to the creditor
+            for (Property property : ownedProperties) {
+                property.setOwner(creditor);  // Transfer ownership to creditor
+                creditor.addOwnedProperty(property);  // Add property to creditor's list
+            }
+
+            ownedProperties.clear();  // Clear the bankrupt player's property list
+
+            // Transfer money to the creditor only if it's greater than 0
+            if (this.money > 0) {
+                creditor.addMoney(this.money);  // Transfer remaining money to creditor
+                this.money = 0;  // The player's money is now 0
+            }
+        }
+    }
+
 
     public boolean mortgageProperty(Property property) {
         if (ownedProperties.contains(property) && !property.isMortgaged()) {
