@@ -90,18 +90,19 @@ public class Property {
 
     public void payRent(Player player, int rentAmount) {
         if (owner != null && owner != player) {
-            int actualRent = getRent();
+            int actualRent = rentAmount;
             if (player.getMoney() >= actualRent) {
-                player.deductMoney(actualRent);
+                player.deductMoney(actualRent, owner);
                 owner.addMoney(actualRent);
                 JOptionPane.showMessageDialog(null, player.getName() + " paid $" + actualRent + " in rent to " + owner.getName());
                 GameUI.updateProfiles(player, owner);
             } else {
                 JOptionPane.showMessageDialog(null, player.getName() + " does not have enough money to pay rent!");
-                player.handleBankruptcy();
+                player.handleBankruptcy(owner);
             }
         }
     }
+
 
     public void landOnProperty(Player player, int diceRoll) {
         if (owner != null && owner != player) {
