@@ -198,4 +198,50 @@ public class Property {
             default -> 0;
         };
     }
+
+    public static boolean ownsFullColorGroup(Player player, String colorGroup) {
+        List<Property> allColorProps = GameUI.getPropertiesByColor(colorGroup);
+        for (Property prop : allColorProps) {
+            if (!player.equals(prop.getOwner())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void buildEvenly(Player player, String colorGroup) {
+        if (!ownsFullColorGroup(player, colorGroup)) {
+            JOptionPane.showMessageDialog(null, "You must own all " + colorGroup + " properties to build houses.");
+            return;
+        }
+
+        List<Property> groupProps = GameUI.getPropertiesByColor(colorGroup);
+
+        // Sort by fewest houses first
+        groupProps.sort(Comparator.comparingInt(Property::getHouseCount));
+
+        boolean builtAny = false;
+
+        while (true) {
+            boolean builtThisRound = false;
+
+            for (Property prop : groupProps) {
+                if (prop.getHouseCount() < 5 && player.getBalance() >= prop.getPrice()) {
+                    prop.buildHouse();
+                    player.deductMoney(prop.getPrice());
+                    builtAny = builtThisRound = true;
+                }
+            }
+
+            if (!builtThisRound) break;
+        }
+
+        if (builtAny) {
+            JOptionPane.showMessageDialog(null, "Houses built evenly on " + colorGroup + " group.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Unable to build any houses. Check your balance or house limits.");
+        }
+
+        GameUI.getInstance().updateProfiles(player, player);
+    }
 }

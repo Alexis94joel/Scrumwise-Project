@@ -177,4 +177,62 @@ public class Player {
             return false;
         }
     }
+
+    public void moveTo(int position) {
+        this.position = position;
+        GameUI.getInstance().updateTokenPosition(this);
+    }
+
+    public void move(int spaces) {
+        int newPosition = (this.position + spaces) % 40;
+        this.position = newPosition;
+
+        // Optional: handle passing GO
+        if (this.position + spaces >= 40) {
+            this.balance += 200;
+            System.out.println(name + " passed GO and collected $200!");
+        }
+    }
+
+    public void moveBack(int spaces) {
+        this.position = (this.position - spaces + 40) % 40;  // wrap around
+        GameUI.getInstance().updateTokenPosition(this);
+    }
+
+    private boolean inJail = false;
+
+    public boolean isInJail() {
+        return inJail;
+    }
+
+    public void setInJail(boolean status) {
+        inJail = status;
+    }
+
+    public void sendToJail() {
+        this.position = 10; // Jail index
+        this.inJail = true;
+        GameUI.getInstance().updateTokenPosition(this);
+    }
+
+    public void goToJail() {
+        this.setCurrentPosition(10);
+        this.setInJail(true);        // Track jail status
+    }
+
+    private int getOutOfJailFreeCards = 0;
+
+    public void addGetOutOfJailFreeCard() {
+        getOutOfJailFreeCards++;
+    }
+
+    public boolean hasGetOutOfJailFreeCard() {
+        return getOutOfJailFreeCards > 0;
+    }
+
+    public void useGetOutOfJailFreeCard() {
+        if (getOutOfJailFreeCards > 0) {
+            getOutOfJailFreeCards--;
+        }
+    }
 }
