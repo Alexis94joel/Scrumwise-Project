@@ -11,7 +11,7 @@ public class MoneyCard extends CommunityChestCard {
         if (amount > 0) {
             player.addMoney(amount);
         } else {
-            player.deductMoney(-amount);
+            player.deductMoney(-amount, null); // Pass null as creditor since it's a general deduction
         }
     }
 }

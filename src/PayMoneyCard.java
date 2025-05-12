@@ -8,7 +8,7 @@ public class PayMoneyCard extends CommunityChestCard {
 
     @Override
     public void apply(Player player) {
-        player.deductMoney(amount);
+        player.deductMoney(amount, null);  // No creditor in this case
         System.out.println(player.getName() + " pays $" + amount);
     }
 }

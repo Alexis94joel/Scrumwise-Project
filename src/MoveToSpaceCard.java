@@ -10,6 +10,6 @@ public class MoveToSpaceCard extends CommunityChestCard {
     public void apply(Player player) {
         player.moveTo(destination);
         System.out.println(player.getName() + " moves to space " + destination);
-        GameUI.getInstance().handleSpaceAction(player); // You must define this
+        GameUI.getInstance().handleSpaceAction(player); // Call handleSpaceAction after the move
     }
 }

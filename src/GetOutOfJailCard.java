@@ -5,7 +5,7 @@ public class GetOutOfJailCard extends CommunityChestCard {
 
     @Override
     public void apply(Player player) {
-        player.addGetOutOfJailFreeCard(this); // You must implement this in Player class
+        player.addGetOutOfJailFreeCard();
         System.out.println(player.getName() + " gets a Get Out of Jail Free card.");
     }
 }

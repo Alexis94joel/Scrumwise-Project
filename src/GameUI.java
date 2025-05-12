@@ -81,6 +81,19 @@ public class GameUI {
         frame.setVisible(true);
     }
 
+    public static GameUI getInstance() {
+        if (instance == null) {
+            instance = new GameUI(players);  // Create the instance if it doesn't exist
+        }
+        return instance;
+    }
+
+    public static void initialize(List<Player> players) {
+        if (instance == null) {
+            instance = new GameUI(players);  // Initialize GameUI with the list of players
+        }
+    }
+
     public static boolean playerOwnsColorGroup(Player player, Property property) {
         List<Property> colorGroup = getColorGroup(property);
         if (colorGroup == null) return false;

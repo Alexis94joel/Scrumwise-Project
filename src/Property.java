@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 
 // Class to represent a property in the game
@@ -139,38 +140,75 @@ public class Property {
     }
 
     // Modified buildHouse method to ensure HashMap update and repaint.
-    public void buildHouse(Player player, HashMap<Integer, Property> properties, DisplayToken displayToken) {
-        if (houseCount < 5) {
-            int houseCost = getHousePrice();
-            if (player.getMoney() >= houseCost) {
-                player.deductMoney(houseCost);
-                houseCount++;
-                JOptionPane.showMessageDialog(null,
-                        player.getName() + " built a house on " + name + ". Total houses: " + houseCount);
-                GameUI.updateProfiles(player, owner);
-
-                int propertyIndex = -1;
-                for (Integer key : properties.keySet()) {
-                    if (properties.get(key) == this) {
-                        propertyIndex = key;
-                        break;
-                    }
+    public void buildHouse(Player player, HashMap<Integer, Property> properties, DisplayToken board) {
+        // First, ensure the player owns all properties of a color set
+        String colorGroup = this.getColorGroup();
+        if (player.ownsFullColorSet(colorGroup)) {
+            // List of all properties of the same color group
+            List<Property> colorGroupProperties = new ArrayList<>();
+            for (Property p : player.getOwnedProperties()) {
+                if (p.getColorGroup().equalsIgnoreCase(colorGroup)) {
+                    colorGroupProperties.add(p);
                 }
+            }
 
-                if (propertyIndex != -1) {
-                    properties.put(propertyIndex, this); // Update the HashMap
-                    displayToken.repaint(); // Force the display to update
-                } else {
-                    System.err.println("Error: Property not found in HashMap when building house.");
+            // Ensure houses are built evenly across the properties
+            int houseCount = getHousePrice();  // Define the house price
+            int numProperties = colorGroupProperties.size();
+
+            // First, build one house on each property in the color set
+            for (Property p : colorGroupProperties) {
+                if (p.getHouseCount() < 5) {
+                    p.buildHouse(player, properties, board);  // Build house on the property
                 }
+            }
 
-            } else {
-                JOptionPane.showMessageDialog(null,
-                        player.getName() + " does not have enough money to build a house on " + name);
+            // Now, check if we can build extra houses
+            int extraHouses = player.getMoney() / houseCount;  // Calculate how many houses player can afford
+            extraHouses = Math.min(extraHouses, numProperties);  // We can only add as many houses as there are properties in the color set
+
+            // Ask the player where to place the extra houses
+            for (int i = 0; i < extraHouses; i++) {
+                // Ask the player to choose where to place the extra house
+                Property propertyToBuildOn = choosePropertyForExtraHouse(colorGroupProperties);
+                propertyToBuildOn.buildHouse(player, properties, board);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Maximum houses reached on " + name);
+            // Notify the player they need to own the full color set
+            JOptionPane.showMessageDialog(null, "You must own all properties in the color set to build houses!");
         }
+    }
+
+    private Property choosePropertyForExtraHouse(List<Property> properties) {
+        Property[] propertyArray = properties.toArray(new Property[0]);
+        JComboBox<Property> comboBox = new JComboBox<>(propertyArray);
+
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Property) {
+                    Property property = (Property) value;
+                    setText(property.getName() + " (Houses: " + property.getHouseCount() + ")");
+                }
+                return this;
+            }
+        });
+
+        int option = JOptionPane.showConfirmDialog(
+                null,
+                comboBox,
+                "Choose property to build extra house",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            return (Property) comboBox.getSelectedItem();
+        }
+
+        return null;  // Cancelled or invalid
     }
 
     public void removeHouse() {
@@ -197,51 +235,5 @@ public class Property {
             case "light blue", "pink", "orange", "red", "yellow", "green" -> 3;
             default -> 0;
         };
-    }
-
-    public static boolean ownsFullColorGroup(Player player, String colorGroup) {
-        List<Property> allColorProps = GameUI.getPropertiesByColor(colorGroup);
-        for (Property prop : allColorProps) {
-            if (!player.equals(prop.getOwner())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static void buildEvenly(Player player, String colorGroup) {
-        if (!ownsFullColorGroup(player, colorGroup)) {
-            JOptionPane.showMessageDialog(null, "You must own all " + colorGroup + " properties to build houses.");
-            return;
-        }
-
-        List<Property> groupProps = GameUI.getPropertiesByColor(colorGroup);
-
-        // Sort by fewest houses first
-        groupProps.sort(Comparator.comparingInt(Property::getHouseCount));
-
-        boolean builtAny = false;
-
-        while (true) {
-            boolean builtThisRound = false;
-
-            for (Property prop : groupProps) {
-                if (prop.getHouseCount() < 5 && player.getBalance() >= prop.getPrice()) {
-                    prop.buildHouse();
-                    player.deductMoney(prop.getPrice());
-                    builtAny = builtThisRound = true;
-                }
-            }
-
-            if (!builtThisRound) break;
-        }
-
-        if (builtAny) {
-            JOptionPane.showMessageDialog(null, "Houses built evenly on " + colorGroup + " group.");
-        } else {
-            JOptionPane.showMessageDialog(null, "Unable to build any houses. Check your balance or house limits.");
-        }
-
-        GameUI.getInstance().updateProfiles(player, player);
     }
 }
