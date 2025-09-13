@@ -1,7 +1,7 @@
 // Class to represent a Utility property
 public class Utility extends Property {
     public Utility(String name, int price, int rent) {
-        super(name, price, rent);
+        super(name, price, rent, new int[0]); // Utilities don't use houseRent array
     }
 
     @Override
@@ -13,7 +13,11 @@ public class Utility extends Property {
     }
 
     private int calculateUtilityRent(int diceRoll, Player owner) {
-        int utilityCount = (int) owner.getOwnedProperties().stream().filter(p -> p instanceof Utility).count();
+        int utilityCount = (int) owner.getOwnedProperties()
+                .stream()
+                .filter(p -> p instanceof Utility)
+                .count();
+
         return (utilityCount == 1) ? diceRoll * 4 : diceRoll * 10;
     }
 }
